@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <list>
 #include <numbers>
+#include"math/MathUtility.h"
 #define NOMINMAX
 
 using namespace KamataEngine;

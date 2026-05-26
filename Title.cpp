@@ -4,8 +4,6 @@
 #include "math.h"
 #include <cmath>
 #include"math/MathUtility.h"
-
-
 using namespace KamataEngine;
 using namespace MathUtility;
 
@@ -13,8 +11,27 @@ using namespace MathUtility;
 
 void Title::Initialize()
 {
-	textureHandle_ = TextureManager::Load("Scenes/tdTitle.png");
-	titleSprite_ = KamataEngine::Sprite::Create(textureHandle_, {0, 0});
+	
+	T_FontHandle_ = TextureManager::Load("UI/TitleFont.png");
+	T_FontSprite_ = KamataEngine::Sprite::Create(T_FontHandle_, {256, 50});
+	
+
+
+	T_StartHandle_ = TextureManager::Load("UI/TitleUI.png");
+	T_StartSprite_ = KamataEngine::Sprite::Create(T_StartHandle_, {448, 364});
+
+	T_StartHandle_2 = TextureManager::Load("UI/Pushed_TitleUI.png");
+	T_StartSprite_2 = KamataEngine::Sprite::Create(T_StartHandle_2, {448, 364});
+
+
+
+
+	CreditsHandle_ = TextureManager::Load("Scenes/Credits.png");
+	CreditsSprite_ = KamataEngine::Sprite::Create(CreditsHandle_, {10, 518});
+	
+
+
+	
 	// Springin ボタン・システム(1)　決定2
 	Botan_ = Audio::GetInstance()->LoadWave("Sounds/sound/Decision2.mp3");
 
@@ -69,7 +86,7 @@ void Title::Update()
 
 
 
-
+	T_FontSprite_->SetSize({768, 144});
 
 
 	
@@ -140,7 +157,20 @@ void Title::Draw()
 
 	Sprite::PreDraw();
 
-	//titleSprite_->Draw();
+	T_FontSprite_->Draw();
+
+
+
+	T_StartSprite_->Draw();
+	if (Input::GetInstance()->IsPressMouse(0))
+	{
+		T_StartSprite_2->Draw();
+	}
+	
+
+
+
+	CreditsSprite_->Draw();
 
 	Sprite::PostDraw();
 
@@ -158,5 +188,11 @@ Title::~Title()
 	//  フェード
 	delete fade_;
 	// タイトルのスプライト
-	delete titleSprite_;
+	delete T_FontSprite_;
+
+	delete T_StartSprite_;
+	delete T_StartSprite_2;
+
+	//クレジット
+	delete CreditsSprite_;
 }

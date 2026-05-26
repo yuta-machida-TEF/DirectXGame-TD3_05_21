@@ -1,6 +1,4 @@
 #include"Player.h"
-
-
 #include <algorithm>
 #include <cassert>
 #include <list>
@@ -8,7 +6,6 @@
 #define NOMINMAX
 #include "MyMath.h"
 #include "math.h"
-#include"math/MathUtility.h"
 
 using namespace KamataEngine;
 using namespace MathUtility;
@@ -193,7 +190,15 @@ void Player::Update()
 	{
 
 		#pragma region プレイヤーの行動
+
+
+
+
 		Attack();
+
+
+
+
 		#pragma region プレイヤーの移動
 
 	// キャラクターの移動ベクトル
@@ -335,7 +340,7 @@ void Player::Update()
 			P_shotSound_ = Audio::GetInstance()->PlayWave(P_shotHandle_, false);
 		}
 
-
+		
 
 
 		// 座標移動(ベクトルの加算)
@@ -390,7 +395,7 @@ void Player::Update()
 		worldTransform_.rotation_.x += 0.2f;
 
 		overTimer += 10;
-		if (overTimer == 1000)
+		if (overTimer == 500)
 		{
 			isDead_ = true;
 		}
@@ -505,7 +510,7 @@ void Player::Attack()
 		p_bullets_.push_back(newBullet);
 
 		
-	
+		
 	}
 }
 
@@ -542,12 +547,7 @@ void Player::OnCollition2(const E_Bullet* enemyBullet)
 {
 	(void)enemyBullet;
 	hp_ -= 500;
-	/*
-	if (hp_ <= 0) 
-	{
-		hp_ = 0;
-		isDead_ = true;
-	}*/
+	
 }
 #pragma endregion
 

@@ -5,10 +5,10 @@
 #include <cassert>
 #include <list>
 #include <numbers>
-
 #include "MyMath.h"
 #include "math.h"
 #include <cmath>
+#include"math/MathUtility.h"
 
 #include "P_Bullet.h"
 
@@ -60,6 +60,10 @@ public:
 	//回復アイテムの使用状態
 	bool canUseRecovery = true;
 	uint32_t recoveryCount = 3;
+
+
+
+	
 
 	// 行動フェーズ
 	enum class Phase

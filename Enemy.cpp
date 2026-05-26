@@ -7,6 +7,7 @@
 #define NOMINMAX
 #include "MyMath.h"
 #include "math.h"
+#include"math/MathUtility.h"
 
 using namespace KamataEngine;
 using namespace MathUtility;
@@ -34,17 +35,16 @@ void Enemy::Initialize(Model* model, Camera* camera, KamataEngine::Vector3& posi
 
 	//効果音ラボ  戦闘[1] ドラゴンの鳴き声1 恐竜や怪獣の声にも使える
 	E_V_Handle_ = Audio::GetInstance()->LoadWave("Sounds/sound/Dragon's_Roar1.mp3");
+	
+	// 効果音ラボ  戦闘[1] 火炎魔法1 火の玉を飛ばす
+	E_A_Handle_ = Audio::GetInstance()->LoadWave("Sounds/sound/FlameMagic1.mp3");
 
 
 }
 
 void Enemy::Update()
 {
-	// キャラクターの移動ベクトル
-	// Vector3 move = {0, 0, 0};
-	// キャラクターの移動速さ
-	// const float kCharacterSpeed = 0.2f;
-
+	
 
 
 #pragma region 敵の行動フェーズ
@@ -95,6 +95,8 @@ void Enemy::Update()
 			// 50%の確率で撃つ
 			if (rand() % 2 == 0) 
 			{
+				E_Attack_ = Audio::GetInstance()->PlayWave(E_A_Handle_, false);
+			
 				Fire();
 			}
 			// 発射タイマーを初期化
@@ -102,11 +104,27 @@ void Enemy::Update()
 		}
 
 
+		// HP60%以下
+		/*
+		if (E_hp_ < E_maxHP_ * 0.6f)
+		{
+			phase_ = Phase::Rage;
+		}*/
+
 		// HPでフェーズ変更
 		if (E_hp_ < E_maxHP_ * 0.3f && phase_ != Phase::Rage)
 		{
 			phase_ = Phase::Rage;
 		}
+
+
+
+		// HP30%以下
+		/*
+		if (E_hp_ < E_maxHP_ * 0.3f) 
+		{
+			phase_ = Phase::Berserk;
+		}*/
 
 		break;
 	}
@@ -133,7 +151,7 @@ void Enemy::Update()
 
 		// 上下移動激しく
 		walkTimer_ += 10.0f / 60.0f;
-		worldTransform_.translation_.y = sin(walkTimer_ * 0.2f) * 20.0f;
+		worldTransform_.translation_.y = sin(walkTimer_ * 0.2f) * 15.0f;
 
 
 		// 発射間隔短くする
@@ -171,26 +189,39 @@ void Enemy::Update()
 			// 弾生成
 			E_Bullet* new_e_Bullet = new E_Bullet();
 
+
 			int randNum = rand() % 10;
 
 			float scale = 1.0f;
 
-			if (randNum == 0) {
+			if (randNum == 0)
+			{
 				scale = 3.0f;
 			}
 
-			new_e_Bullet->Initialize(model_, worldTransform_.translation_, velocity,scale);
+
+
+
+			new_e_Bullet->Initialize(model_, worldTransform_.translation_, velocity, scale);
 
 			e_bullets_.push_back(new_e_Bullet);
 
 			/////////////////////////////////////////////////////////////
+
+
+
+
+
 
 			Fire();
 			fireTimer_ = 15; // ←めっちゃ速くする
 		}
 
 
-		
+
+
+
+
 		if (E_hp_ <= 0)
 		{
 			/// isEnemyDead_ = true;
@@ -202,9 +233,32 @@ void Enemy::Update()
 
 		break;
 		}
+
+		/*
+	case Phase::Berserk:
+	{
+
+
+
+
+		if (E_hp_ <= 0) 
+		{    
+			phase_ = Phase::Destroyed;
+		}
+
+	break;
+	}
+		*/
+
 	case Phase::Destroyed:
 		{
-
+		    // 咆哮
+		    if (isE_V_Played_ == 0) 
+			{
+			    E_Voice_ = Audio::GetInstance()->PlayWave(E_V_Handle_, false);
+			    
+				isE_V_Played_ = true;
+		    }
 		
 		worldTransform_.translation_.y -= 0.2f;
 		worldTransform_.rotation_.z += 0.001f;
@@ -212,7 +266,7 @@ void Enemy::Update()
 
 		clearTimer += 10;
 
-		if (clearTimer==1000)
+		if (clearTimer==500)
 		{
 			isEnemyDead_ = true;
 		}
@@ -232,7 +286,8 @@ void Enemy::Update()
 		e_bullet->Update();
 	}
 
-	e_bullets_.remove_if([](E_Bullet* e_bullet){
+	e_bullets_.remove_if
+	([](E_Bullet* e_bullet){
 		if (e_bullet->IsDead_EB())
 		{
 			delete e_bullet;
@@ -369,11 +424,18 @@ void Enemy::OnCollition(const P_Bullet* playerBullet)
 {
 	(void)playerBullet;
 	E_hp_ -= 100;
+
+	//Rageモードでは防御力が上がる
+	if (phase_ == Phase::Rage)
+	{
+		E_hp_ -= 75;
+	}
+
 	if (E_hp_ <= 0) 
 	{
 		E_hp_ = 0;
-		isEnemyDead_ = true;
-		//phase_ = Phase::Destroyed;
+		
+		
 	}
 }
 
